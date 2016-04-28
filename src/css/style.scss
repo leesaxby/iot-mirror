@@ -1,0 +1,22 @@
+body {
+  h1 {
+    color: #ff9900;
+  }
+}
+
+#container {
+  h1 {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  .ng-invalid.ng-dirty {
+    border-color: #FA787E;
+  }
+  .ng-valid.ng-dirty {
+    border-color: #78FA89;
+  }
+}
+
+.todo-done {
+  text-decoration: line-through;
+}

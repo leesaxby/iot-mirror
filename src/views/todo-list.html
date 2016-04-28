@@ -1,0 +1,10 @@
+<form name="todoForm" ng-submit="todoForm.$valid && todoList.addItem()" novalidate>
+  <input type="text" ng-model="todoList.newItem" placeholder="Add New Item" required>
+    <button type="submit">Add Item</button>
+</form>
+<ul>
+  <li ng-repeat="item in todoList.items | limitTo : 20 ">
+    <span ng-class="{ 'todo-done': item.done  }"> {{ item.text }} <span>
+    <button ng-click="todoList.toggleDone( item )">Done</button>
+  </li>
+</ul>
