@@ -1,14 +1,8 @@
 
-	var ws = new WebSocket("ws://178.62.117.150:9999", "echo-protocol");
-	ws.addEventListener("message", function(e) {
-		console.log( JSON.parse( e.data ) );
-
-	});
-
 
 	var todoList = angular.module( "todo-list", [] );
 
-	todoList.directive( "todoList", [ '$http', function( $http ) {
+	todoList.directive( "todoList", [ 'WebSocket', function( webSocket ) {
 		return {
 			retrict: "E",
 			templateUrl: "./views/todo-list.html",
@@ -36,7 +30,8 @@
 								}
 							};
 
-					ws.send( JSON.stringify( obj ) );
+
+					webSocket.sendMessage( JSON.stringify( obj ) )
 					this.newItem = "";
 				};
 				this.toggleDone = function( item ) {
@@ -47,7 +42,7 @@
 								data: item
 							};
 
-					ws.send( JSON.stringify( obj ) )	;
+					webSocket.sendMessage( JSON.stringify( obj ) )
 				};
 			},
 			controllerAs: "todoList"
