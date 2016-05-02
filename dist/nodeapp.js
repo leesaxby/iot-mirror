@@ -64,7 +64,7 @@ wsServer.on( "request", function( req ) {
 	clients.connections.push( connection );
 	console.log( ( new Date() ) + " Connection accepted [" + req.remoteAddress + "] count: " + clients.connections.length );
 
-	connection.sendUTF( JSON.stringify( todoItems ) );
+	connection.sendUTF( JSON.stringify( { type: "connect", data: todoItems } ) );
 
 	connection.on( "message", function( message ) {
 		if ( message.type === "utf8" ) {

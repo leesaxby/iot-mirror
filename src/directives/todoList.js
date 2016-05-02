@@ -2,24 +2,19 @@
 
 	var todoList = angular.module( "todo-list", [] );
 
-	todoList.directive( "todoList", [ 'WebSocket', function( webSocket ) {
+	todoList.directive( "todoList", [ 'WebSocket', function(  webSocket ) {
 		return {
 			retrict: "E",
 			templateUrl: "./views/todo-list.html",
-			controller: function() {
+			controller: function( $scope ) {
 
-				var items = [{
-							id: "01",
-							text: "first item",
-							done: false
-						},
-						{
-							id: "02",
-							text: "second item",
-							done: true
-						}];
+				webSocket.addCallback( "add", function( data ) {
+					$scope.$apply(function() {
+						$scope.todo.items.push( data.data );
+					});
+				});
 
-				this.items = items;
+				this.items = webSocket.initialItems;
 				this.newItem = "";
 				this.addItem = function() {
 					var obj = {
@@ -29,7 +24,6 @@
 									done: false
 								}
 							};
-
 
 					webSocket.sendMessage( JSON.stringify( obj ) )
 					this.newItem = "";
@@ -45,7 +39,7 @@
 					webSocket.sendMessage( JSON.stringify( obj ) )
 				};
 			},
-			controllerAs: "todoList"
+			controllerAs: "todo"
 		};
 	}]);
 
