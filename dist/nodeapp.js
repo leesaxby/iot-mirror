@@ -69,7 +69,7 @@ wsServer.on( "request", function( req ) {
 	connection.on( "message", function( message ) {
 		if ( message.type === "utf8" ) {
 			var msgData = JSON.parse( message.utf8Data );
-			if ( msgData.type === "todo_item" ) {
+			if ( msgData.type === "update" ) {
 				if ( msgData.data.id ) {
 					updateTodo( msgData, this );
 				} else {

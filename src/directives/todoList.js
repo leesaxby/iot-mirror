@@ -14,6 +14,17 @@
 					});
 				});
 
+				webSocket.addCallback( "update", function( data ) {
+					$scope.$apply(function() {
+						for (var i = 0; i < $scope.todo.items.length; i++) {
+							if ( $scope.todo.items[i].id === data.data.id ) {
+								$scope.todo.items[i].done = data.data.done;
+								break;
+							}
+						}
+					});
+				});
+
 				this.items = webSocket.initialItems;
 				this.newItem = "";
 				this.addItem = function() {
@@ -32,7 +43,7 @@
 					item.done = !item.done;
 
 					var obj = {
-								type: "todo_item",
+								type: "update",
 								data: item
 							};
 
