@@ -1,57 +1,57 @@
 
 
-	var todoList = angular.module( "todo-list", [] );
+  var todoList = angular.module( "todo-list", [] );
 
-	todoList.directive( "todoList", [ 'WebSocket', function(  webSocket ) {
-		return {
-			retrict: "E",
-			templateUrl: "./views/todo-list.html",
-			controller: function( $scope ) {
+  todoList.directive( "todoList", [ 'WebSocket', function(  webSocket ) {
+    return {
+      retrict: "E",
+      templateUrl: "./views/todo-list.html",
+      controller: function( $scope ) {
 
-				webSocket.addCallback( "add", function( data ) {
-					$scope.$apply(function() {
-						$scope.todo.items.push( data.data );
-					});
-				});
+        webSocket.addCallback( "add", function( data ) {
+          $scope.$apply(function() {
+            $scope.todo.items.push( data.data );
+          });
+        });
 
-				webSocket.addCallback( "update", function( data ) {
-					$scope.$apply(function() {
-						for (var i = 0; i < $scope.todo.items.length; i++) {
-							if ( $scope.todo.items[i].id === data.data.id ) {
-								$scope.todo.items[i].done = data.data.done;
-								break;
-							}
-						}
-					});
-				});
+        webSocket.addCallback( "update", function( data ) {
+          $scope.$apply(function() {
+            for (var i = 0; i < $scope.todo.items.length; i++) {
+              if ( $scope.todo.items[i].id === data.data.id ) {
+                $scope.todo.items[i].done = data.data.done;
+                break;
+              }
+            }
+          });
+        });
 
-				this.items = webSocket.initialItems;
-				this.newItem = "";
-				this.addItem = function() {
-					var obj = {
-								type: "todo_item",
-								data: {
-									text: this.newItem,
-									done: false
-								}
-							};
+        this.items = webSocket.initialItems;
+        this.newItem = "";
+        this.addItem = function() {
+          var obj = {
+                type: "todo_item",
+                data: {
+                  text: this.newItem,
+                  done: false
+                }
+              };
 
-					webSocket.sendMessage( JSON.stringify( obj ) )
-					this.newItem = "";
-				};
-				this.toggleDone = function( item ) {
-					item.done = !item.done;
+          webSocket.sendMessage( JSON.stringify( obj ) )
+          this.newItem = "";
+        };
+        this.toggleDone = function( item ) {
+          item.done = !item.done;
 
-					var obj = {
-								type: "update",
-								data: item
-							};
+          var obj = {
+                type: "update",
+                data: item
+              };
 
-					webSocket.sendMessage( JSON.stringify( obj ) )
-				};
-			},
-			controllerAs: "todo"
-		};
-	}]);
+          webSocket.sendMessage( JSON.stringify( obj ) )
+        };
+      },
+      controllerAs: "todo"
+    };
+  }]);
 
-	export default todoList;
+  export default todoList;
