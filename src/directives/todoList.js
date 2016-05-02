@@ -7,6 +7,16 @@
       retrict: "E",
       templateUrl: "./views/todo-list.html",
       controller: function( $scope ) {
+        var self = this;
+
+        webSocket.initialItemsPromise.then(function( data ) {
+          for ( var i = 0; i < data.data.length; i++ ) {
+            self.items.push( data.data[ i ] );
+          }
+        }, function( err ) {
+          console.log(err)
+        })
+
 
         webSocket.addCallback( "add", function( data ) {
           $scope.$apply(function() {
@@ -25,7 +35,7 @@
           });
         });
 
-        this.items = webSocket.initialItems;
+        this.items = [];
         this.newItem = "";
         this.addItem = function() {
           var obj = {

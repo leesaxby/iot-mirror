@@ -1,13 +1,16 @@
 var app = angular.module( "mirror-app" );
 
-app.factory("WebSocket", function() {
+app.factory("WebSocket", [ '$q' , function( $q ) {
 
   var ws = new WebSocket("ws://178.62.117.150:9999", "echo-protocol");
   var initialItems = [];
+  var initialItemsDeferred = $q.defer();
+  var initialItemsPromise = initialItemsDeferred.promise;
   var events = {
     add: [],
     update: []
   };
+
 
   function addCallback( type, callback ) {
     if ( type === "add" ) {
@@ -34,9 +37,7 @@ app.factory("WebSocket", function() {
     }
 
     if ( data.type === "connect" ) {
-      for ( var i = 0; i < data.data.length; i++ ) {
-        initialItems.push( data.data[ i ] );
-      }
+      initialItemsDeferred.resolve( data );
     }
   });
 
@@ -45,9 +46,10 @@ app.factory("WebSocket", function() {
   }
 
   return {
+    initialItemsPromise: initialItemsPromise,
     initialItems: initialItems,
     sendMessage: sendMessage,
     addCallback: addCallback
   };
 
-});
+}]);
