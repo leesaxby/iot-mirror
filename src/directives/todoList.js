@@ -6,37 +6,12 @@
     return {
       retrict: "E",
       templateUrl: "./views/todo-list.html",
-      controller: function( $scope ) {
+      controller: function( $scope, $timeout ) {
+
         var self = this;
-
-        webSocket.initialItemsPromise.then(function( data ) {
-          for ( var i = 0; i < data.data.length; i++ ) {
-            self.items.push( data.data[ i ] );
-          }
-        }, function( err ) {
-          console.log(err)
-        })
-
-
-        webSocket.addCallback( "add", function( data ) {
-          $scope.$apply(function() {
-            $scope.todo.items.push( data.data );
-          });
-        });
-
-        webSocket.addCallback( "update", function( data ) {
-          $scope.$apply(function() {
-            for (var i = 0; i < $scope.todo.items.length; i++) {
-              if ( $scope.todo.items[i].id === data.data.id ) {
-                $scope.todo.items[i].done = data.data.done;
-                break;
-              }
-            }
-          });
-        });
-
         this.items = [];
         this.newItem = "";
+
         this.addItem = function() {
           var obj = {
                 type: "add",
@@ -49,6 +24,7 @@
           webSocket.sendMessage( JSON.stringify( obj ) )
           this.newItem = "";
         };
+
         this.toggleDone = function( item ) {
           item.done = !item.done;
 
@@ -59,6 +35,31 @@
 
           webSocket.sendMessage( JSON.stringify( obj ) )
         };
+
+        webSocket.initialItemsPromise.then(function( data ) {
+          for ( var i = 0; i < data.data.length; i++ ) {
+            self.items.push( data.data[ i ] );
+          }
+        }, function( err ) {
+          console.log(err)
+        })
+
+        webSocket.addItemPromise.then(function( data ) {
+          self.items.push( data.data );
+        }, function( err ) {
+          console.log(err)
+        })
+
+        webSocket.updateItemPromise.then(function( data ) {
+          for (var i = 0; i < self.items.length; i++) {
+            if ( self.items[i].id === data.data.id ) {
+              self.items[i].done = data.data.done;
+              break;
+            }
+          }
+        }, function( err ) {
+          console.log(err)
+        })
       },
       controllerAs: "todo"
     };
