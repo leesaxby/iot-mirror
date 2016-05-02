@@ -29,7 +29,7 @@
         this.newItem = "";
         this.addItem = function() {
           var obj = {
-                type: "todo_item",
+                type: "add",
                 data: {
                   text: this.newItem,
                   done: false
