@@ -1,12 +1,10 @@
-
-
   var todoList = angular.module( "todo-list", [] );
 
   todoList.directive( "todoList", [ 'WebSocket', function(  webSocket ) {
     return {
       retrict: "E",
       templateUrl: "./views/todo-list.html",
-      controller: function( $scope, $timeout ) {
+      controller: function() {
 
         var self = this;
         this.items = [];

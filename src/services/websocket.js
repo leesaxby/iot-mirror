@@ -4,11 +4,8 @@ app.factory("WebSocket", [ '$q' , function( $q ) {
 
   var ws = new WebSocket("ws://178.62.117.150:9999", "echo-protocol");
   var initialItemsDeferred = $q.defer();
-  var initialItemsPromise = initialItemsDeferred.promise;
   var addItemDeferred = $q.defer();
-  var addItemPromise = addItemDeferred.promise;
   var updateItemDeferred = $q.defer();
-  var updateItemPromise = updateItemDeferred.promise;
 
   ws.addEventListener("message", function(e) {
     var data = JSON.parse( e.data );
@@ -31,10 +28,10 @@ app.factory("WebSocket", [ '$q' , function( $q ) {
   }
 
   return {
-    initialItemsPromise: initialItemsPromise,
-    addItemPromise: addItemPromise,
-    updateItemPromise: updateItemPromise,
-    sendMessage: sendMessage,
+    initialItemsPromise: initialItemsDeferred.promise,
+    addItemPromise: addItemDeferred.promise,
+    updateItemPromise: updateItemDeferred.promise,
+    sendMessage: sendMessage
   };
 
 }]);
