@@ -1,23 +1,23 @@
-var app = angular.module( "mirror-app" );
+let app = angular.module( "mirror-app" );
 
 app.factory("WebSocket", [ '$q' , function( $q ) {
 
-  var ws = null;
-  var initialItemsDeferred = $q.defer();
-  var msgHandlers = [];
-  var addMsgHandler = ( fn ) => msgHandlers.push( fn );
-  var sendMessage = ( data ) => ws.send( data );
+  let ws = null;
+  let initialItemsDeferred = $q.defer();
+  let msgHandlers = [];
+  let addMsgHandler = ( fn ) => msgHandlers.push( fn );
+  let sendMessage = ( data ) => ws.send( data );
 
-  var createSocket = ( url, protocal ) => {
+  let createSocket = ( url, protocal ) => {
     ws = new WebSocket( url, protocal );
 
     ws.addEventListener("message", function(e) {
-      var data = JSON.parse( e.data );
-      for ( var i = 0; i < msgHandlers.length; i++ ) {
+      let data = JSON.parse( e.data );
+      for ( let i = 0; i < msgHandlers.length; i++ ) {
         msgHandlers[i]( data );
       }
 
-      if( data.type === "connect" ) {
+      if ( data.type === "connect" ) {
         initialItemsDeferred.resolve( data );
       }
 

@@ -1,4 +1,4 @@
-  var todoList = angular.module( "todo-list", [] );
+  let todoList = angular.module( "todo-list", [] );
 
   todoList.directive( "todoList", [ "$timeout", "WebSocket", function( $timeout, webSocket ) {
     return {
@@ -10,7 +10,7 @@
         this.newItem = "";
 
         this.addItem = () => {
-          var obj = {
+          let obj = {
                 type: "add",
                 data: {
                   text: this.newItem,
@@ -25,7 +25,7 @@
         this.toggleDone = ( item ) => {
           item.done = !item.done;
 
-          var obj = {
+          let obj = {
                 type: "update",
                 data: item
               };
@@ -36,7 +36,7 @@
         webSocket.createSocket( "ws://178.62.117.150:9999", "echo-protocol" );
 
         webSocket.initialItemsPromise.then( ( data ) => {
-          for ( var i = 0; i < data.data.length; i++ ) {
+          for ( let i = 0; i < data.data.length; i++ ) {
             this.items.push( data.data[ i ] );
           }
         }, ( err ) => console.log( err ) );
@@ -48,7 +48,7 @@
 
           if ( data.type === "update" ) {
             $timeout( () => {
-              for ( var i = 0; i < this.items.length; i++ ) {
+              for ( let i = 0; i < this.items.length; i++ ) {
                 if ( this.items[i].id === data.data.id ) {
                   this.items[i].done = data.data.done;
                   break;
