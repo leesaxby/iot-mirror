@@ -5,8 +5,10 @@ app.factory("WebSocket", [ '$q' , function( $q ) {
   var ws = null;
   var initialItemsDeferred = $q.defer();
   var msgHandlers = [];
+  var addMsgHandler = ( fn ) => msgHandlers.push( fn );
+  var sendMessage = ( data ) => ws.send( data );
 
-  function createSocket( url, protocal ) {
+  var createSocket = ( url, protocal ) => {
     ws = new WebSocket( url, protocal );
 
     ws.addEventListener("message", function(e) {
@@ -20,14 +22,6 @@ app.factory("WebSocket", [ '$q' , function( $q ) {
       }
 
     });
-  }
-
-  function addMsgHandler( fn ) {
-    msgHandlers.push( fn );
-  }
-
-  function sendMessage( data ) {
-    ws.send( data );
   }
 
   return {

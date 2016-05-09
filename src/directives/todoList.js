@@ -6,11 +6,10 @@
       templateUrl: "./views/todo-list.html",
       controller: function() {
 
-        var self = this;
         this.items = [];
         this.newItem = "";
 
-        this.addItem = function() {
+        this.addItem = () => {
           var obj = {
                 type: "add",
                 data: {
@@ -23,7 +22,7 @@
           this.newItem = "";
         };
 
-        this.toggleDone = function( item ) {
+        this.toggleDone = ( item ) => {
           item.done = !item.done;
 
           var obj = {
@@ -31,35 +30,31 @@
                 data: item
               };
 
-          webSocket.sendMessage( JSON.stringify( obj ) )
+          webSocket.sendMessage( JSON.stringify( obj ) );
         };
 
         webSocket.createSocket( "ws://178.62.117.150:9999", "echo-protocol" );
 
-        webSocket.initialItemsPromise.then(function( data ) {
+        webSocket.initialItemsPromise.then( ( data ) => {
           for ( var i = 0; i < data.data.length; i++ ) {
-            self.items.push( data.data[ i ] );
+            this.items.push( data.data[ i ] );
           }
-        }, function( err ) {
-          console.log(err)
-        })
+        }, ( err ) => console.log( err ) );
 
-        webSocket.addMsgHandler(function( data ) {
+        webSocket.addMsgHandler( ( data ) => {
           if ( data.type === "add" ) {
-            $timeout(function() {
-              self.items.push( data.data );
-            })
+            $timeout( () => this.items.push( data.data ) );
           }
 
           if ( data.type === "update" ) {
-            $timeout(function() {
-              for (var i = 0; i < self.items.length; i++) {
-                if ( self.items[i].id === data.data.id ) {
-                  self.items[i].done = data.data.done;
+            $timeout( () => {
+              for ( var i = 0; i < this.items.length; i++ ) {
+                if ( this.items[i].id === data.data.id ) {
+                  this.items[i].done = data.data.done;
                   break;
                 }
               }
-            })
+            });
           }
 
         })
