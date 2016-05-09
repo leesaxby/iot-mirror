@@ -1,6 +1,6 @@
   var todoList = angular.module( "todo-list", [] );
 
-  todoList.directive( "todoList", [ 'WebSocket', function(  webSocket ) {
+  todoList.directive( "todoList", [ "$timeout", "WebSocket", function( $timeout, webSocket ) {
     return {
       retrict: "E",
       templateUrl: "./views/todo-list.html",
@@ -34,6 +34,8 @@
           webSocket.sendMessage( JSON.stringify( obj ) )
         };
 
+        webSocket.createSocket( "ws://178.62.117.150:9999", "echo-protocol" );
+
         webSocket.initialItemsPromise.then(function( data ) {
           for ( var i = 0; i < data.data.length; i++ ) {
             self.items.push( data.data[ i ] );
@@ -42,22 +44,26 @@
           console.log(err)
         })
 
-        webSocket.addItemPromise.then(function( data ) {
-          self.items.push( data.data );
-        }, function( err ) {
-          console.log(err)
+        webSocket.addMsgHandler(function( data ) {
+          if ( data.type === "add" ) {
+            $timeout(function() {
+              self.items.push( data.data );
+            })
+          }
+
+          if ( data.type === "update" ) {
+            $timeout(function() {
+              for (var i = 0; i < self.items.length; i++) {
+                if ( self.items[i].id === data.data.id ) {
+                  self.items[i].done = data.data.done;
+                  break;
+                }
+              }
+            })
+          }
+
         })
 
-        webSocket.updateItemPromise.then(function( data ) {
-          for (var i = 0; i < self.items.length; i++) {
-            if ( self.items[i].id === data.data.id ) {
-              self.items[i].done = data.data.done;
-              break;
-            }
-          }
-        }, function( err ) {
-          console.log(err)
-        })
       },
       controllerAs: "todo"
     };

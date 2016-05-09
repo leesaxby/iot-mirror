@@ -2,26 +2,29 @@ var app = angular.module( "mirror-app" );
 
 app.factory("WebSocket", [ '$q' , function( $q ) {
 
-  var ws = new WebSocket("ws://178.62.117.150:9999", "echo-protocol");
+  var ws = null;
   var initialItemsDeferred = $q.defer();
-  var addItemDeferred = $q.defer();
-  var updateItemDeferred = $q.defer();
+  var msgHandlers = [];
 
-  ws.addEventListener("message", function(e) {
-    var data = JSON.parse( e.data );
+  function createSocket( url, protocal ) {
+    ws = new WebSocket( url, protocal );
 
-    switch ( data.type ) {
-      case "add":
-        addItemDeferred.resolve( data );
-        break;
-      case "update":
-        updateItemDeferred.resolve( data );
-        break;
-      case "connect":
+    ws.addEventListener("message", function(e) {
+      var data = JSON.parse( e.data );
+      for ( var i = 0; i < msgHandlers.length; i++ ) {
+        msgHandlers[i]( data );
+      }
+
+      if( data.type === "connect" ) {
         initialItemsDeferred.resolve( data );
-        break;
-    };
-  });
+      }
+
+    });
+  }
+
+  function addMsgHandler( fn ) {
+    msgHandlers.push( fn );
+  }
 
   function sendMessage( data ) {
     ws.send( data );
@@ -29,8 +32,8 @@ app.factory("WebSocket", [ '$q' , function( $q ) {
 
   return {
     initialItemsPromise: initialItemsDeferred.promise,
-    addItemPromise: addItemDeferred.promise,
-    updateItemPromise: updateItemDeferred.promise,
+    createSocket: createSocket,
+    addMsgHandler: addMsgHandler,
     sendMessage: sendMessage
   };
 
