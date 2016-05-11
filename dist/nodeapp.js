@@ -1,5 +1,6 @@
 var server = require( "./server.js" ).startServer();
 var WebSocketServer = require( "websocket" ).server;
+var fs = require("fs");
 var wsServer = new WebSocketServer({
   httpServer: server,
   autoAcceptConnections: false
@@ -9,16 +10,11 @@ var clients = {
   connections: []
 };
 
-var todoItems = [{
-      id: '01',
-      text: "first item",
-      done: false
-    },
-    {
-      id: '02',
-      text: "second item",
-      done: true
-    }]
+function  getTodoItems( callback ) {
+  fs.readFile("app/data/todoitems.json", 'utf8', function( err, todoItems ) {
+    callback( todoItems );
+  });
+}
 
 function updateTodo( msgData, conn ) {
   for ( var i = 0, todoLen = todoItems.length; i < todoLen; i++ ) {
@@ -64,7 +60,11 @@ wsServer.on( "request", function( req ) {
   clients.connections.push( connection );
   console.log( ( new Date() ) + " Connection accepted [" + req.remoteAddress + "] count: " + clients.connections.length );
 
-  connection.sendUTF( JSON.stringify( { type: "connect", data: todoItems } ) );
+  getTodoItems(function( todoItems ) {
+    var items = JSON.parse( todoItems );
+    connection.sendUTF( JSON.stringify( { type: "connect", data: items } ) );
+  })
+
 
   connection.on( "message", function( message ) {
     if ( message.type === "utf8" ) {
