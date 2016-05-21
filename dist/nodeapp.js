@@ -12,11 +12,22 @@ var clients = {
   connections: []
 };
 
-function  getTodoItems( callback ) {
+function getTodoItems( callback ) {
   fs.readFile("app/data/todoItems.json", 'utf8', function( err, items ) {
     todoItems = JSON.parse( items );
     callback();
   });
+}
+
+function setTodoItems() {
+  var items = JSON.stringify( todoItems );
+  fs.writeFile("app/data/todoItems.json", items, function( err ) {
+    if ( err ) {
+      console.log( err );
+    } else {
+      console.log("Todo list saved");
+    }
+  })
 }
 
 function updateTodo( msgData, conn ) {
@@ -31,6 +42,7 @@ function updateTodo( msgData, conn ) {
       break;
     }
   }
+  setTodoItems();
 };
 
 function addTodo( msgData ) {
@@ -45,6 +57,7 @@ function addTodo( msgData ) {
   for ( var x = 0, clientsLen = clients.connections.length; x < clientsLen; x++ ) {
     clients.connections[ x ].sendUTF( JSON.stringify( { type: "add", data: todoItems[ todoItems.length - 1 ] } ) );
   }
+  setTodoItems();
 };
 
 function checkOrigin( origin ) {
@@ -70,9 +83,6 @@ wsServer.on( "request", function( req ) {
       connection.sendUTF( JSON.stringify( { type: "connect", data: todoItems } ) );
     })
   }
-
-
-
 
   connection.on( "message", function( message ) {
     if ( message.type === "utf8" ) {
