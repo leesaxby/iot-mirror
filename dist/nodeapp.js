@@ -6,13 +6,16 @@ var wsServer = new WebSocketServer({
   autoAcceptConnections: false
 });
 
+var todoItems = null;
+
 var clients = {
   connections: []
 };
 
 function  getTodoItems( callback ) {
-  fs.readFile("app/data/todoitems.json", 'utf8', function( err, todoItems ) {
-    callback( todoItems );
+  fs.readFile("app/data/todoItems.json", 'utf8', function( err, items ) {
+    todoItems = JSON.parse( items );
+    callback();
   });
 }
 
@@ -60,10 +63,15 @@ wsServer.on( "request", function( req ) {
   clients.connections.push( connection );
   console.log( ( new Date() ) + " Connection accepted [" + req.remoteAddress + "] count: " + clients.connections.length );
 
-  getTodoItems(function( todoItems ) {
-    var items = JSON.parse( todoItems );
-    connection.sendUTF( JSON.stringify( { type: "connect", data: items } ) );
-  })
+  if ( todoItems ) {
+    connection.sendUTF( JSON.stringify( { type: "connect", data: todoItems } ) );
+  } else {
+    getTodoItems(function() {
+      connection.sendUTF( JSON.stringify( { type: "connect", data: todoItems } ) );
+    })
+  }
+
+
 
 
   connection.on( "message", function( message ) {
