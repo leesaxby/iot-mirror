@@ -1,3 +1,1 @@
-import todoList from "./directives/todoList.js";
-
-var app = angular.module( "mirror-app", [ "todo-list" ] );
+let app = angular.module( "mirror-app", [ "ngRoute", "todo-list" ] );
