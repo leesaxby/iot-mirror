@@ -15,7 +15,8 @@ gulp.task("connect", function() {
 	connect.server({
 		root: "build",
 		port: 8888,
-		livereload: true
+		livereload: true,
+		fallback: "build/index.html"
 	});
 });
 
@@ -33,6 +34,11 @@ gulp.task("move-html", function() {
 	gulp.src( "src/views/*.html" )
 			.on( "error", gutil.log )
 			.pipe( gulp.dest( "build/views" ) )
+			.pipe( connect.reload() );
+
+	gulp.src( "src/templates/*.html" )
+			.on( "error", gutil.log )
+			.pipe( gulp.dest( "build/templates" ) )
 			.pipe( connect.reload() );
 });
 
